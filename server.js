@@ -9,6 +9,13 @@ const app = express();
 
 //Get Stuff
 app.get('/api/notes', (req, res) => {
+  const searchQuery = req.query;
+
+  if (searchQuery.searchTerm) {
+    let searchedItems = data.filter(item => item.title.includes(searchQuery.searchTerm) || item.content.includes(searchQuery.searchTerm));
+    res.json(searchedItems);
+
+  }
   res.json(data);
   return;
 })
