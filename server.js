@@ -10,6 +10,12 @@ const app = express();
 //Get Stuff
 app.get('/api/notes', (req, res) => {
   res.json(data);
+  return;
+})
+
+app.get('/api/notes/:id', (req, res) => {
+  res.json(data.find(item => item.id === Number(req.params.id)));
+  return;
 })
 
 
