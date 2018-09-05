@@ -41,9 +41,13 @@ app.get('/api/notes', (req, res, next) => {
   });
 });
 
-app.get('/api/notes/:id', (req, res) => {
-  generateResponse(res, data.find(item => item.id === getItemID(req)));
-  return;
+app.get('/api/notes/:id', (req, res, next) => {
+  notes.find(req.params.id, (err, list) => {
+    if (err) {
+      return next(err);
+    }
+    res.json(list);
+  });
 });
 
 app.use(function(req, res, next) {
