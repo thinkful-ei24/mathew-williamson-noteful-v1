@@ -30,16 +30,15 @@ app.get('*', (req, res, next) => {
   next();
 })
 
-app.get('/api/notes', (req, res) => {
-  const searchQuery = req.query;
+app.get('/api/notes', (req, res, next) => {
+  const { searchTerm } = req.query;
 
-  if (searchQuery.searchTerm) {
-    let searchedItems = filterBySearchTerm(searchQuery);
-    generateResponse(res, searchedItems);
-
-  }
-  generateResponse(res, data);
-  return;
+  notes.filter(searchTerm, (err, list) => {
+    if (err) {
+      return next(err);
+    }
+    res.json(list);
+  });
 });
 
 app.get('/api/notes/:id', (req, res) => {
