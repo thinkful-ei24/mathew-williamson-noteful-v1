@@ -2,13 +2,13 @@
 
 const express = require('express');
 const config = require('./config');
+const logger = require('./middleware/logger');
 
 // Load array of notes
 const data = require('./db/notes');
 
 const app = express(); 
 
-console.log(config.PORT)
 
 const getItemID = function(req) {
   return Number(req.params.id);
@@ -23,6 +23,11 @@ const filterBySearchTerm = function(searchQuery) {
 }
 
 //Get Stuff
+app.get('*', (req, res, next) => {
+  console.log(logger.logger(req));
+  next();
+})
+
 app.get('/api/notes', (req, res) => {
   const searchQuery = req.query;
 
