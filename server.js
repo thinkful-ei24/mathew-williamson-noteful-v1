@@ -11,6 +11,7 @@ const notes = simDB.initialize(data);
 
 const app = express(); 
 
+app.use(logger);
 app.use(express.static('public'));
 app.use(express.json());
 
@@ -28,10 +29,10 @@ const filterBySearchTerm = function(searchQuery) {
 }
 
 //Get Stuff
-app.get('*', (req, res, next) => {
-  console.log(logger.logger(req));
-  next();
-})
+// app.get('*', (req, res, next) => {
+//   console.log(logger.logger(req));
+//   next();
+// })
 
 app.put('/api/notes/:id', (req, res, next) =>{
   const id = req.params.id;
