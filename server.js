@@ -1,8 +1,8 @@
 'use strict';
 
 const express = require('express');
+const morgan = require('morgan');
 const config = require('./config');
-const logger = require('./middleware/logger');
 
 // Load array of notes
 const data = require('./db/notes');
@@ -11,28 +11,9 @@ const notes = simDB.initialize(data);
 
 const app = express(); 
 
-app.use(logger);
+app.use(morgan('dev'));
 app.use(express.static('public'));
 app.use(express.json());
-
-
-const getItemID = function(req) {
-  return Number(req.params.id);
-};
-
-const generateResponse = function(res, jsonObj) {
-  res.json(jsonObj);
-};
-
-const filterBySearchTerm = function(searchQuery) {
-  return data.filter(item => item.title.includes(searchQuery.searchTerm) || item.content.includes(searchQuery.searchTerm));
-}
-
-//Get Stuff
-// app.get('*', (req, res, next) => {
-//   console.log(logger.logger(req));
-//   next();
-// })
 
 app.put('/api/notes/:id', (req, res, next) =>{
   const id = req.params.id;
@@ -41,14 +22,14 @@ app.put('/api/notes/:id', (req, res, next) =>{
   const updateObj = [];
   const updateFields = ['title', 'content'];
 
-  console.log(req.body)
+  console.log(req.body);
 
   updateFields.forEach( field => {
     if (field in req.body) {
       updateObj[field] = req.body[field];
     }
   });
-  console.log(updateObj)
+  console.log(updateObj);
 
   notes.update(id, updateObj, (err, item) => {
     if (err) {
@@ -87,15 +68,15 @@ app.use(function(req, res, next) {
   err.status = 404;
   res.status(404).json( { message: 'Not Found' });
   next();
-})
+});
 
 app.use( function(err, req, res, next) {
   res.status( err.status || 500);
   res.json( {
     message: err.message,
     error: err
-  })
-})
+  });
+});
 
 app.listen(config.PORT, function() {
   console.info(`Server listening on ${this.address().port}`);
