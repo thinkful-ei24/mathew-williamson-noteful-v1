@@ -48,11 +48,25 @@ router.get('/', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-  notes.find(req.params.id, (err, list) => {
+  notes.find(req.params.id, (err, item) => {
+    if (err) {
+      next(err);
+    } else if (item) {
+      res.json(item);
+    } else {
+      next();
+    }
+    
+  });
+});
+
+router.delete('/:id', (req, res, next) => {
+  //This will delete any id with a 204...is that fine, or should it make sure that it exists first?
+  notes.delete(req.params.id, (err) => {
     if (err) {
       return next(err);
     }
-    res.json(list);
+    res.status(204).end();
   });
 });
 
@@ -76,6 +90,6 @@ router.post('/', (req, res, next) => {
     } else {
       next();
     }
-  })
-})
+  });
+});
 module.exports = router;
