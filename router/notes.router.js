@@ -34,7 +34,7 @@ router.put('/:id', (req, res, next) =>{
     }
   });
 });
-console.log('router');
+
 router.get('/', (req, res, next) => {
   
   const { searchTerm } = req.query;
