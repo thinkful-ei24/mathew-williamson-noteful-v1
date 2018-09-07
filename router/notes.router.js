@@ -7,6 +7,7 @@ const data = require('../db/notes');
 const simDB = require('../db/simDB');
 const notes = simDB.initialize(data);
 
+/* Promises Done */
 router.put('/:id', (req, res, next) =>{
   const id = req.params.id;
 
@@ -23,53 +24,60 @@ router.put('/:id', (req, res, next) =>{
   });
   console.log(updateObj);
 
-  notes.update(id, updateObj, (err, item) => {
-    if (err) {
+  notes.update(id, updateObj)
+    .then( item => {
+      if (item) {
+        res.json(item);
+      } else {
+        next();
+      }
+    })
+    .catch( err => {
       return next(err);
-    }
-    if (item) {
-      res.json(item);
-    } else {
-      next();
-    }
-  });
+    });
 });
 
+/* Promises Done */
 router.get('/', (req, res, next) => {
   
   const { searchTerm } = req.query;
 
-  notes.filter(searchTerm, (err, list) => {
-    if (err) {
+  notes.filter(searchTerm)
+    .then( list => {
+      res.json(list);
+    })
+    .catch( err => {
       return next(err);
-    }
-    res.json(list);
-  });
+    });
 });
 
+/* Promises Done */
 router.get('/:id', (req, res, next) => {
-  notes.find(req.params.id, (err, item) => {
-    if (err) {
+  notes.find(req.params.id)
+    .then( item => {
+      if (item) {
+        res.json(item);
+      } else {
+        next();
+      }
+    })
+    .catch(err => {
       next(err);
-    } else if (item) {
-      res.json(item);
-    } else {
-      next();
-    }
-    
-  });
+    })
 });
 
+/* Promises Done */
 router.delete('/:id', (req, res, next) => {
-  //This will delete any id with a 204...is that fine, or should it make sure that it exists first?
-  notes.delete(req.params.id, (err) => {
-    if (err) {
+  notes.delete(req.params.id)
+    .then( () => {
+      res.status(204).end();
+    })
+    .catch( err => {
       return next(err);
-    }
-    res.status(204).end();
-  });
+    });
 });
 
+/* Promises Done */
 router.post('/', (req, res, next) => {
   const { title, content } = req.body;
 
@@ -81,15 +89,16 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
-  notes.create(newItem, (err, item) => {
-    if (err) {
+  notes.create(newItem)
+    .then( item => {
+      if (item) {
+        res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
+      } else {
+        next();
+      }
+    })
+    .catch( err => {
       return next(err);
-    }
-    if (item) {
-      res.location(`http://${req.headers.host}/notes/${item.id}`).status(201).json(item);
-    } else {
-      next();
-    }
-  });
+    });
 });
 module.exports = router;
